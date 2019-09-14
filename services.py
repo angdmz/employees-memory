@@ -1,7 +1,8 @@
 import json
 
 import requests
-from flask import request
+from flask_restful import Resource
+
 
 class OfficeRepository:
 
@@ -85,28 +86,6 @@ class EmployeeRepository:
             return EmployeeRepository(employees)
 
 
-class LimitOffsetPaginator:
-    def get_limit_offset(self):
-        data = request.args
-        limit = 10
-        offset = 10
-        if 'limit' in data:
-            limit = int(data['limit'])
-        if 'offset' in data:
-            offset = int(data['limit'])
-        return limit, offset
-
-    def get_limit(self):
-        data = request.args
-        if 'limit' in data:
-            return int(data['limit'])
-
-    def get_offset(self):
-        data = request.args
-        if 'offset' in data:
-            return int(data['limit'])
-
-
 class Expander:
 
     repository_models = {}
@@ -114,13 +93,12 @@ class Expander:
     def __init__(self, repository_models):
         self.repository_models = repository_models
 
-    def solve_expandables(self, elements):
-        if request.args.getlist('expand'):
+    def solve_expandables(self, elements, expand_args):
+        if expand_args:
             result = []
-            expand = request.args.getlist('expand')
             for q in elements:
                 d = q.copy()
-                for expandable in expand:
+                for expandable in expand_args:
                     exp_list = expandable.split('.')
                     self.expand(q, exp_list, d)
                 result.append(d)
@@ -139,3 +117,9 @@ class Expander:
                 d[expandable] = new_model.copy()
                 self.expand(new_model, expansion_list[1:], d[expandable])
         return
+
+
+class KwargsAssigner(Resource):
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
