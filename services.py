@@ -118,12 +118,12 @@ class Expander:
         if request.args.getlist('expand'):
             result = []
             expand = request.args.getlist('expand')
-            for expandable in expand:
-                exp_list = expandable.split('.')
-                for q in elements:
-                    d = q.copy()
+            for q in elements:
+                d = q.copy()
+                for expandable in expand:
+                    exp_list = expandable.split('.')
                     self.expand(q, exp_list, d)
-                    result.append(d)
+                result.append(d)
             return result
         return elements
 
