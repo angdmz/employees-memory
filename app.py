@@ -19,9 +19,9 @@ DEPARTMENTS_JSON_FILE_PATH = os.getenv('DEPARTMENTS_JSON_FILE_PATH', 'department
 EMPLOYEES_URL = os.getenv('EMPLOYEES_URL', 'https://rfy56yfcwk.execute-api.us-west-1.amazonaws.com/bigcorp/employees')
 
 # the dependencies to be injected
-offices_repository = OfficeRepository.create_repository_from_file('offices.json')
-departments_repository = DepartmentRepository.create_repository_from_file('departments.json')
-employees_repository = EmployeeRepository.create_repository_from_url('https://rfy56yfcwk.execute-api.us-west-1.amazonaws.com/bigcorp/employees')
+offices_repository = OfficeRepository.create_repository_from_file(OFFICES_JSON_FILE_PATH)
+departments_repository = DepartmentRepository.create_repository_from_file(DEPARTMENTS_JSON_FILE_PATH)
+employees_repository = EmployeeRepository.create_repository_from_url(EMPLOYEES_URL)
 expander = Expander({
     'manager': employees_repository,
     'superdepartment': departments_repository,
@@ -32,12 +32,31 @@ expander = Expander({
 app = Flask(__name__)
 api = Api(app)
 
-api.add_resource(SingleOffice, '/offices/<int:office_id>', resource_class_kwargs={'repository': offices_repository})
-api.add_resource(OfficesList, '/offices', resource_class_kwargs={'repository': offices_repository,'expander': expander,})
-api.add_resource(SingleDepartment, '/departments/<int:department_id>', resource_class_kwargs={'repository': departments_repository})
-api.add_resource(DepartmentList, '/departments', resource_class_kwargs={'repository': departments_repository,'expander': expander,})
-api.add_resource(SingleEmployee, '/employees/<int:employee_id>', resource_class_kwargs={'repository': employees_repository})
-api.add_resource(EmployeeList, '/employees', resource_class_kwargs={'repository': employees_repository,'expander': expander,})
+api_prefix = '/api'
+
+v1_prefix = '/v1'
+
+api.add_resource(SingleOffice, api_prefix + v1_prefix + '/offices/<int:office_id>',
+                 resource_class_kwargs={'repository': offices_repository})
+api.add_resource(OfficesList, api_prefix + v1_prefix + '/offices', resource_class_kwargs=
+                                                                {'repository': offices_repository,
+                                                                 'expander': expander,
+                                                                 'default_limit': 10,
+                                                                 'default_offset': 0, })
+api.add_resource(SingleDepartment, api_prefix + v1_prefix + '/departments/<int:department_id>',
+                 resource_class_kwargs={'repository': departments_repository})
+api.add_resource(DepartmentList, api_prefix + v1_prefix + '/departments', resource_class_kwargs=
+                                                                {'repository': departments_repository,
+                                                                 'expander': expander,
+                                                                 'default_limit': 10,
+                                                                 'default_offset': 0, })
+api.add_resource(SingleEmployee, api_prefix + v1_prefix + '/employees/<int:employee_id>',
+                 resource_class_kwargs={'repository': employees_repository})
+api.add_resource(EmployeeList, api_prefix + v1_prefix + '/employees', resource_class_kwargs=
+                                                                {'repository': employees_repository,
+                                                                 'expander': expander,
+                                                                 'default_limit': 10,
+                                                                 'default_offset': 0, })
 
 @app.route('/')
 def index():
