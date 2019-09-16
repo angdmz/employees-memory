@@ -38,3 +38,15 @@ docker build -t employees-memory:dev -f Dockerfile.dev .
 docker run --name emdev --rm -d -p someport:5000 -v $(pwd):/opt/project -w /opt/project employees-memory:dev python -u -m flask run
 ```
 The -p flag on the last command is to set the port of the app, change "someport"
+
+
+## Endpoints
+
+- GET /api/v1/employees
+- GET /api/v1/employees/{id}
+- GET /api/v1/departments
+- GET /api/v1/departments/{id}
+- GET /api/v1/offices
+- GET /api/v1/offices/{id}
+
+All endpoints admit limit, offset and expand parameters
