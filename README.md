@@ -1,11 +1,12 @@
 # employees-memory
 
-This is a simple flask app that implements a REST API, with 3 endpoints
+This is a simple flask app built on python 3.6.7 that implements a REST API, with 3 endpoints
 
 No DB, all storage is in memory
 
 ### Installation no docker
-1) Create a virtual env
+
+1) Create a virtual env and activate it
 2) On console
 ```sh
 cd /code/folder/
